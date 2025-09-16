@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>配置调试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>配置调试页面</h1>
+    
+    <div class="section">
+        <h2>当前localStorage配置</h2>
+        <button onclick="checkLocalStorage()">检查localStorage</button>
+        <pre id="localStorage-result"></pre>
+    </div>
+    
+    <div class="section">
+        <h2>设置AI配置</h2>
+        <label>API Key:</label>
+        <input type="text" id="apiKey" placeholder="输入你的OpenAI API Key">
+        
+        <label>Base URL:</label>
+        <input type="text" id="baseUrl" value="https://api.openai.com/v1">
+        
+        <label>模型:</label>
+        <select id="modelName">
+            <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+            <option value="gpt-4">GPT-4</option>
+            <option value="gpt-4-turbo">GPT-4 Turbo</option>
+        </select>
+        
+        <label>Temperature:</label>
+        <input type="number" id="temperature" value="0.7" min="0" max="2" step="0.1">
+        
+        <label>Max Tokens:</label>
+        <input type="number" id="maxTokens" value="2000" min="1" max="4000">
+        
+        <button onclick="saveConfig()">保存配置</button>
+    </div>
+    
+    <div class="section">
+        <h2>测试AI增强</h2>
+        <textarea id="testContent" rows="5" cols="50" placeholder="输入测试内容">这是一个测试文档。\n\n我们需要测试AI增强功能是否正常工作。</textarea><br>
+        <button onclick="testAiEnhance()">测试AI增强</button>
+        <pre id="test-result"></pre>
+    </div>
+    
+    <script>
+        function checkLocalStorage() {
+            const settings = localStorage.getItem('md2image-settings');
+            const aiConfig = localStorage.getItem('ai-config');
+            
+            const result = {
+                'md2image-settings': settings ? JSON.parse(settings) : null,
+                'ai-config': aiConfig ? JSON.parse(aiConfig) : null,
+                'all_keys': Object.keys(localStorage)
+            };
+            
+            document.getElementById('localStorage-result').textContent = JSON.stringify(result, null, 2);
+        }
+        
+        function saveConfig() {
+            const config = {
+                aiConfig: {
+                    baseUrl: document.getElementById('baseUrl').value,
+                    apiKey: document.getElementById('apiKey').value,
+                    modelName: document.getElementById('modelName').value,
+                    customModelName: '',
+                    temperature: parseFloat(document.getElementById('temperature').value),
+                    maxTokens: parseInt(document.getElementById('maxTokens').value)
+                },
+                imageConfig: {
+                    backgroundColor: '#ffffff',
+                    backgroundImageType: 'none',
+                    backgroundImage: '',
+                    backgroundOpacity: 0.8,
+                    backgroundSize: 'cover'
+                },
+                cssConfig: {
+                    customCSS: '',
+                    fontFamily: 'Inter, system-ui, sans-serif',
+                    fontSize: 16,
+                    lineHeight: 1.6,
+                    textColor: '#1f2937'
+                }
+            };
+            
+            localStorage.setItem('md2image-settings', JSON.stringify(config));
+            alert('配置已保存到localStorage');
+            checkLocalStorage();
+        }
+        
+        async function testAiEnhance() {
+            const content = document.getElementById('testContent').value;
+            if (!content.trim()) {
+                alert('请输入测试内容');
+                return;
+            }
+            
+            // 从localStorage读取配置
+            const settingsStr = localStorage.getItem('md2image-settings');
+            if (!settingsStr) {
+                alert('请先保存配置');
+                return;
+            }
+            
+            const settings = JSON.parse(settingsStr);
+            
+            const request = {
+                content: content,
+                task_type: 'segment_text',
+                aiConfig: {
+                    baseUrl: settings.aiConfig.baseUrl,
+                    apiKey: settings.aiConfig.apiKey,
+                    modelName: settings.aiConfig.customModelName || settings.aiConfig.modelName,
+                    temperature: settings.aiConfig.temperature,
+                    maxTokens: settings.aiConfig.maxTokens
+                }
+            };
+            
+            console.log('[DEBUG] 发送请求:', request);
+            
+            try {
+                const response = await fetch('http://localhost:8000/api/v1/enhance', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(request),
+                });
+                
+                const data = await response.json();
+                console.log('[DEBUG] 收到响应:', data);
+                
+                document.getElementById('test-result').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('[DEBUG] 请求失败:', error);
+                document.getElementById('test-result').textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        // 页面加载时检查localStorage
+        window.onload = function() {
+            checkLocalStorage();
+        };
+    </script>
+</body>
+</html>

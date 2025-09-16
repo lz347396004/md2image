@@ -1,0 +1,198 @@
+/* 使用系统字体，避免网络依赖 */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* 字体系统 - 使用系统字体 */
+  --font-serif: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  
+  /* 极简黑白配色 */
+  --color-primary: #000000;
+  --color-secondary: #666666;
+  --color-tertiary: #999999;
+  --color-background: #ffffff;
+  --color-surface: #fafafa;
+  --color-border: #e5e5e5;
+  --color-text: #000000;
+  --color-text-secondary: #666666;
+  --color-text-muted: #999999;
+  
+  /* 暗色模式 */
+  --color-dark-primary: #ffffff;
+  --color-dark-secondary: #cccccc;
+  --color-dark-tertiary: #999999;
+  --color-dark-background: #000000;
+  --color-dark-surface: #111111;
+  --color-dark-border: #333333;
+  --color-dark-text: #ffffff;
+  --color-dark-text-secondary: #cccccc;
+  --color-dark-text-muted: #999999;
+  
+  /* 间距系统 */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  
+  /* 字体大小 */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--color-text);
+  background-color: var(--color-background);
+  
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 暗色模式 */
+.dark {
+  --color-primary: var(--color-dark-primary);
+  --color-secondary: var(--color-dark-secondary);
+  --color-tertiary: var(--color-dark-tertiary);
+  --color-background: var(--color-dark-background);
+  --color-surface: var(--color-dark-surface);
+  --color-border: var(--color-dark-border);
+  --color-text: var(--color-dark-text);
+  --color-text-secondary: var(--color-dark-text-secondary);
+  --color-text-muted: var(--color-dark-text-muted);
+}
+
+/* 全局样式重置 */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 标题字体 */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0;
+  color: var(--color-text);
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary);
+}
+
+/* 覆盖Tailwind对hr标签的重置，确保自定义样式生效 */
+hr {
+  border: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  height: auto !important;
+}
+
+/* 确保markdown内容中的hr标签能正确显示自定义样式 */
+.markdown-content hr,
+.custom-css-target hr,
+.prose hr {
+  border: none !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(59, 130, 246, 0.6), 
+    rgba(139, 92, 246, 0.6), 
+    transparent
+  ) !important;
+  margin: 2rem 0 !important;
+  border-radius: 1px !important;
+  display: block !important;
+  clear: both !important;
+  position: relative !important;
+  overflow: visible !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* 水平分隔线的伪元素样式 */
+.markdown-content hr::before,
+.custom-css-target hr::before,
+.prose hr::before {
+  content: '' !important;
+  position: absolute !important;
+  top: -1px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 60% !important;
+  height: 4px !important;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(59, 130, 246, 0.3), 
+    rgba(139, 92, 246, 0.3), 
+    transparent
+  ) !important;
+  border-radius: 2px !important;
+  filter: blur(1px) !important;
+  z-index: 1 !important;
+}
+
+.markdown-content hr::after,
+.custom-css-target hr::after,
+.prose hr::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 8px !important;
+  height: 8px !important;
+  background: radial-gradient(circle, 
+    rgba(59, 130, 246, 0.8), 
+    rgba(139, 92, 246, 0.8)
+  ) !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5) !important;
+  z-index: 2 !important;
+}
+
